@@ -32,39 +32,52 @@ class GameObject(pygame.sprite.Sprite):
 
         self.rect = self.image.get_rect(topleft=(x, y))
 
+def inicializar_juego():
+    global plataforma, pelota, all_sprites, enemigos, speed_x, speed_y, game_over
+    
+    plataforma = GameObject("platform.png", 350, 500, 100, 30, color_alternativo=(0, 0, 255))
+    pelota = GameObject("ball.png", 375, 400, 50, 50, color_alternativo=(255, 0, 0))
 
-plataforma = GameObject("platform.png", 350, 500, 100, 30, color_alternativo=(0, 0, 255))
-pelota = GameObject("ball.png", 375, 400, 50, 50, color_alternativo=(255, 0, 0))
+    all_sprites = pygame.sprite.Group()
+    enemigos = pygame.sprite.Group()
 
-all_sprites = pygame.sprite.Group()
-enemigos = pygame.sprite.Group()
+    all_sprites.add(plataforma)
+    all_sprites.add(pelota)
 
-all_sprites.add(plataforma)
-all_sprites.add(pelota)
+    inicio_x = 5
+    inicio_y = 5
+    cantidad = 13
+    for i in range(3):
+        y = inicio_y + (55 * i)
+        x = inicio_x + (27.5 * i)
+        for j in range(cantidad):
+            enemigo = GameObject("enemigo.png", x, y, 50, 50, color_alternativo=(0, 255, 0))
+            enemigos.add(enemigo)
+            all_sprites.add(enemigo)
+            x += 55
+        cantidad -= 1
 
-inicio_x = 5
-inicio_y = 5
-cantidad = 13
-for i in range(3):
-    y = inicio_y + (55 * i)
-    x = inicio_x + (27.5 * i)
-    for j in range(cantidad):
-        enemigo = GameObject("enemigo.png", x, y, 50, 50, color_alternativo=(0, 255, 0))
-        enemigos.add(enemigo)
-        all_sprites.add(enemigo)
-        x += 55
-    cantidad -= 1
+    speed_x = 4
+    speed_y = 4
+    game_over = False
+
+inicializar_juego()
 
 move_right = False
 move_left = False
-speed_x = 4
-speed_y = 4
 
-game_over = False
 game_run = True
-font = pygame.font.Font(None, 70)
-win_label = font.render("¡GANASTE!", True, (0, 200, 0))
-lose_label = font.render("¡PERDISTE!", True, (200, 0, 0))
+font_large = pygame.font.Font(None, 70)
+font_small = pygame.font.Font(None, 36)
+win_label = font_large.render("¡GANASTE!", True, (255, 0, 0))
+lose_label = font_large.render("¡PERDISTE!", True, (255, 0, 0))
+restart_label = font_small.render("Presiona 'Q' para volver a jugar", True, (255, 0, 0))
+
+def centrar_texto(texto, y_offset=0):
+    ancho_texto = texto.get_width()
+    pos_x = (ANCHO_VENTANA - ancho_texto) // 2
+    pos_y = (ALTO_VENTANA // 2) + y_offset
+    return (pos_x, pos_y)
 
 while game_run:
     for event in pygame.event.get():
@@ -77,6 +90,9 @@ while game_run:
             elif event.type == pygame.KEYUP:
                 if event.key == pygame.K_RIGHT: move_right = False
                 if event.key == pygame.K_LEFT: move_left = False
+        else:
+            if event.type == pygame.KEYDOWN and event.key == pygame.K_q:
+                inicializar_juego()
 
     if not game_over:
         if move_right and plataforma.rect.right < ANCHO_VENTANA:
@@ -109,9 +125,10 @@ while game_run:
 
     if game_over:
         if not enemigos:
-            mw.blit(win_label, (250, 250))
+            mw.blit(win_label, centrar_texto(win_label, -30))
         else:
-            mw.blit(lose_label, (250, 250))
+            mw.blit(lose_label, centrar_texto(lose_label, -30))
+            mw.blit(restart_label, centrar_texto(restart_label, 30))
 
     pygame.display.flip()
     clock.tick(FPS)
