@@ -4,11 +4,13 @@ Arkanoid with python3.
 
 ## Dependences
 
-·Open a terminal
+·Install python3 in your sistem.
 
-·in the terminal write: "pip install pygame"
+·Open a terminal.
 
-·and python3 code.py
+·in the terminal write: "pip install pygame".
 
-Thanks for you clone :3 
+·and python3 code.py.
+
+Thanks for you clone :3. 
 
